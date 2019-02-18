@@ -52,8 +52,6 @@ socket.on("configuration", function(data) {
 		upload.setMaxFileSize(data.fileUploadMaxFileSize);
 	}
 
-	utils.togglePasswordField("#change-password .reveal-password");
-
 	options.initialize();
 	webpush.initialize();
 
@@ -108,8 +106,6 @@ socket.on("configuration", function(data) {
 				// Store the "previous" value, for next time
 				$(this).data("lastvalue", nick);
 			});
-
-		utils.togglePasswordField("#connect .reveal-password");
 	});
 
 	if ("URLSearchParams" in window) {

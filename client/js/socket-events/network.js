@@ -70,6 +70,4 @@ socket.on("network:info", function(data) {
 			sidebar.find(`.network[data-uuid="${uuid}"] .chan.lobby .name`)
 				.click();
 		});
-
-	utils.togglePasswordField("#connect .reveal-password");
 });
