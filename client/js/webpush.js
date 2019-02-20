@@ -3,6 +3,7 @@
 const $ = require("jquery");
 const storage = require("./localStorage");
 const socket = require("./socket");
+const {vueApp} = require("./vue");
 
 let pushNotificationsButton;
 let clientSubscribed = null;
@@ -41,10 +42,9 @@ module.exports.initialize = () => {
 	pushNotificationsButton = $("#pushNotifications");
 
 	if (!isAllowedServiceWorkersHost()) {
+		vueApp.pushNotificationState = "nohttps";
 		return;
 	}
-
-	$("#pushNotificationsHttps").hide();
 
 	if ("serviceWorker" in navigator) {
 		navigator.serviceWorker.register("service-worker.js").then((registration) => {
@@ -55,7 +55,7 @@ module.exports.initialize = () => {
 			}
 
 			return registration.pushManager.getSubscription().then((subscription) => {
-				$("#pushNotificationsUnsupported").hide();
+				vueApp.pushNotificationState = "supported";
 
 				pushNotificationsButton
 					.prop("disabled", false)
@@ -67,8 +67,8 @@ module.exports.initialize = () => {
 					alternatePushButton();
 				}
 			});
-		}).catch((err) => {
-			$("#pushNotificationsUnsupported span").text(err);
+		}).catch(() => {
+			vueApp.pushNotificationState = "unsupported";
 		});
 	}
 };
@@ -109,10 +109,8 @@ function onPushButton() {
 				alternatePushButton().prop("disabled", false);
 			}
 		})
-	).catch((err) => {
-		$("#pushNotificationsUnsupported")
-			.find("span").text(`An error has occurred: ${err}`).end()
-			.show();
+	).catch(() => {
+		vueApp.pushNotificationState = "unsupported";
 	});
 
 	return false;
