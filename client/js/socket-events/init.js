@@ -56,7 +56,7 @@ socket.on("init", function(data) {
 	}
 
 	vueApp.networks = data.networks;
-	vueApp.isConnected = true;
+	vueApp.$store.commit("isConnected", true);
 	vueApp.currentUserVisibleError = null;
 
 	if (!vueApp.initialized) {
