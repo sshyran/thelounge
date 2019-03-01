@@ -285,7 +285,6 @@ function addFocusItem() {
 function addEditNetworkItem() {
 	function edit(itemData) {
 		socket.emit("network:get", itemData);
-		$('button[data-target="#connect"]').trigger("click");
 	}
 
 	addContextMenuItem({
