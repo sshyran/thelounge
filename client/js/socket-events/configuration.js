@@ -52,26 +52,6 @@ socket.on("configuration", function(data) {
 		options.processSetting("theme", data.defaultTheme, true);
 	}
 
-	/*
-	function handleFormSubmit() {
-		const form = $(this);
-		const event = form.data("event");
-
-		form.find(".btn").prop("disabled", true);
-
-		const values = {};
-		$.each(form.serializeArray(), function(i, obj) {
-			if (obj.value !== "") {
-				values[obj.name] = obj.value;
-			}
-		});
-
-		socket.emit(event, values);
-
-		return false;
-	}
-	*/
-
 	// TODO: move to component (this mirrors the nick to the username field if the username is empty)
 	connect.on("show", function() {
 		connect
