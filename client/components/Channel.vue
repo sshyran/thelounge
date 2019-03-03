@@ -1,5 +1,6 @@
 <template>
 	<ChannelWrapper
+		ref="wrapper"
 		:network="network"
 		:channel="channel"
 		:active-channel="activeChannel"
@@ -25,6 +26,7 @@
 				<button
 					class="close"
 					aria-label="Leave"
+					@click="close"
 				/>
 			</span>
 		</template>
@@ -36,6 +38,7 @@
 				<button
 					class="close"
 					aria-label="Close"
+					@click="close"
 				/>
 			</span>
 		</template>
@@ -54,6 +57,11 @@ export default {
 		activeChannel: Object,
 		network: Object,
 		channel: Object,
+	},
+	methods: {
+		close() {
+			this.$refs.wrapper.close();
+		},
 	},
 };
 </script>

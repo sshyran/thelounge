@@ -1,6 +1,7 @@
 <template>
 	<div
 		v-if="!network.isCollapsed || channel.highlight || channel.type === 'lobby' || (activeChannel && channel === activeChannel.channel)"
+		ref="element"
 		:class="[
 			'chan',
 			channel.type,
@@ -14,6 +15,7 @@
 		:data-name="channel.name"
 		:aria-controls="'#chan-' + channel.id"
 		:aria-selected="activeChannel && channel === activeChannel.channel"
+		:style="closed ? {transition: 'none', opacity: 0.4} : null"
 		role="tab"
 	>
 		<slot
@@ -25,6 +27,8 @@
 </template>
 
 <script>
+import socket from "../js/socket";
+
 export default {
 	name: "ChannelWrapper",
 	props: {
@@ -32,7 +36,33 @@ export default {
 		channel: Object,
 		activeChannel: Object,
 	},
+	data() {
+		return {
+			closed: false,
+		};
+	},
+	mounted() {
+		this.$refs.element.close = this.close.bind(this);
+	},
 	methods: {
+		close() {
+			let cmd = "/close";
+
+			if (this.channel.type === "lobby") {
+				cmd = "/quit";
+
+				if (!confirm(`Are you sure you want to remove ${this.channel.name}?`)) { // eslint-disable-line no-alert
+					return false;
+				}
+			}
+
+			this.closed = true;
+
+			socket.emit("input", {
+				target: Number(this.channel.id),
+				text: cmd,
+			});
+		},
 		getAriaLabel() {
 			const extra = [];
 

@@ -123,7 +123,7 @@ function addCloseItem() {
 		className: "close",
 		displayName: getCloseDisplay,
 		data: (target) => target.attr("data-target"),
-		callback: (itemData) => utils.closeChan($(`.networks .chan[data-target="${itemData}"]`)),
+		callback: (itemData) => document.querySelector(`.networks .chan[data-target="${itemData}"]`).close(),
 	});
 }
 
