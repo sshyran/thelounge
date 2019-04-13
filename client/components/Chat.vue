@@ -21,10 +21,7 @@
 				role="tabpanel"
 			>
 				<div class="header">
-					<button
-						class="lt"
-						aria-label="Toggle channel list"
-					/>
+					<SidebarToggle />
 					<span class="title">{{ channel.name }}</span>
 					<span
 						:title="channel.topic"
@@ -46,6 +43,7 @@
 						<button
 							class="rt"
 							aria-label="Toggle user list"
+							@click="$root.toggleUserlist"
 						/>
 					</span>
 				</div>
@@ -106,6 +104,7 @@ import ParsedMessage from "./ParsedMessage.vue";
 import MessageList from "./MessageList.vue";
 import ChatInput from "./ChatInput.vue";
 import ChatUserList from "./ChatUserList.vue";
+import SidebarToggle from "./SidebarToggle.vue";
 import ListBans from "./Special/ListBans.vue";
 import ListChannels from "./Special/ListChannels.vue";
 import ListIgnored from "./Special/ListIgnored.vue";
@@ -117,6 +116,7 @@ export default {
 		MessageList,
 		ChatInput,
 		ChatUserList,
+		SidebarToggle,
 	},
 	props: {
 		network: Object,
