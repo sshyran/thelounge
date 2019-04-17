@@ -51,20 +51,26 @@ function scrollIntoViewNicely(el) {
 const favicon = $("#favicon");
 
 function synchronizeNotifiedState() {
-	updateTitle();
-
-	let hasAnyHighlights = false;
+	let highlights = 0;
 
 	for (const network of vueApp.networks) {
 		for (const chan of network.channels) {
 			if (chan.highlight > 0) {
-				hasAnyHighlights = true;
-				break;
+				highlights += chan.highlight;
 			}
 		}
 	}
 
-	toggleNotificationMarkers(hasAnyHighlights);
+	updateTitle(highlights);
+	toggleNotificationMarkers(highlights > 0);
+
+	if (window.ExperimentalBadge) {
+		if (highlights > 0) {
+			window.ExperimentalBadge.set(highlights);
+		} else {
+			window.ExperimentalBadge.clear();
+		}
+	}
 }
 
 function toggleNotificationMarkers(newState) {
@@ -81,24 +87,15 @@ function toggleNotificationMarkers(newState) {
 	viewport.toggleClass("notified", newState);
 }
 
-function updateTitle() {
+function updateTitle(highlights) {
 	let title = vueApp.appName;
 
 	if (vueApp.activeChannel) {
 		title = `${vueApp.activeChannel.channel.name} — ${title}`;
 	}
 
-	// add highlight count to title
-	let alertEventCount = 0;
-
-	for (const network of vueApp.networks) {
-		for (const channel of network.channels) {
-			alertEventCount += channel.highlight;
-		}
-	}
-
-	if (alertEventCount > 0) {
-		title = `(${alertEventCount}) ${title}`;
+	if (highlights > 0) {
+		title = `(${highlights}) ${title}`;
 	}
 
 	document.title = title;
