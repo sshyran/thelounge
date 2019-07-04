@@ -7,13 +7,22 @@ const Helper = require("../../helper");
 const themes = require("./themes");
 const packageMap = new Map();
 const inputs = require("../inputs");
+const fs = require("fs");
+const Utils = require("../../command-line/utils");
 
 const stylesheets = [];
+
+const TIME_TO_LIVE = 15 * 60 * 1000; // 15 minutes, in milliseconds
+
+const cache = {
+	outdated: undefined,
+};
 
 module.exports = {
 	getStylesheets,
 	getPackage,
 	loadPackages,
+	outdated,
 };
 
 const packageApis = function(clientManager, packageName) {
@@ -85,4 +94,47 @@ function loadPackages(clientManager) {
 
 		log.info(`Package ${colors.bold(packageName)} loaded`);
 	});
+}
+
+async function outdated(cacheTimeout = TIME_TO_LIVE) {
+	if (cache.outdated !== undefined) {
+		return cache.outdated;
+	}
+
+	// Get paths to the location of packages directory
+	const packagesPath = Helper.getPackagesPath();
+	const packagesConfig = path.join(packagesPath, "package.json");
+	const argsList = [
+		"outdated",
+		"--latest",
+		"--json",
+		"--production",
+		"--ignore-scripts",
+		"--non-interactive",
+		"--cwd",
+		packagesPath,
+	];
+
+	// Check if the configuration file exists
+	if (!fs.existsSync(packagesConfig)) {
+		log.warn("There are no packages installed.");
+		return false;
+	}
+
+	// If we get an error from calling outdated and the code isn't 0, then there are no outdated packages
+	await Utils.executeYarnCommand(...argsList)
+		.then(() => updateOutdated(false))
+		.catch((code) => updateOutdated(code !== 0));
+
+	if (cacheTimeout > 0) {
+		setTimeout(() => {
+			delete cache.outdated;
+		}, cacheTimeout);
+	}
+
+	return cache.outdated;
+}
+
+function updateOutdated(outdatedPackages) {
+	cache.outdated = outdatedPackages;
 }
